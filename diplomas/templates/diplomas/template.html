@@ -1,0 +1,38 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Plantilla · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Plantilla</h1>
+  <p class="text-secondary">JPG, PNG o PDF.</p>
+  {% if template_obj %}
+    <img class="template-thumb template-page-thumb mb-3" alt="Miniatura de {{ template_obj.original_name }}" src="{% url 'diplomas:template_thumb' %}?v={{ template_obj.content_hash }}" onerror="this.remove()">
+    <div class="alert alert-secondary">
+      Plantilla activa: <strong>{{ template_obj.original_name }}</strong>
+      · {{ template_obj.kind|upper }}
+      · {{ template_obj.width_px }} × {{ template_obj.height_px }} px
+      {% if template_obj.kind == "pdf" %}· página {{ template_obj.selected_page }} de {{ template_obj.page_count }}{% endif %}
+    </div>
+  {% endif %}
+  {% if pending %}
+    <div class="card card-body mb-4 border-warning">
+      <h2 class="h5">El PDF contiene {{ pending.page_count }} páginas. Seleccione la página que desea utilizar.</h2>
+      <p>Archivo: {{ pending.original_name }}</p>
+      <form method="post" class="row g-2 align-items-end">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="page">
+        <div class="col-auto">
+          <label class="form-label" for="{{ page_form.page.id_for_label }}">Página</label>
+          {{ page_form.page }}
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-warning" type="submit">Usar esta página</button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+  <form method="post" enctype="multipart/form-data" class="card card-body" data-wait>
+    {% csrf_token %}
+    <label class="form-label" for="{{ upload_form.template_file.id_for_label }}">Nueva plantilla</label>
+    {{ upload_form.template_file }}
+    <button class="btn btn-primary mt-3" type="submit" data-busy>Cargar plantilla</button>
+  </form>
+{% endblock %}

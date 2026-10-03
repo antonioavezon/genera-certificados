@@ -1,0 +1,11 @@
+{% extends "diplomas/base.html" %}
+{% block title %}{{ title }} · Diplomas{% endblock %}
+{% block content %}
+  <div class="card">
+    <div class="card-body">
+      <h1 class="h4">{{ title }}</h1>
+      <p class="mb-3">{{ message }}</p>
+      <a class="btn btn-primary" href="{% url 'diplomas:home' %}">Volver al inicio</a>
+    </div>
+  </div>
+{% endblock %}

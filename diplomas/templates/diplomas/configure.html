@@ -1,0 +1,44 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Configurar · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Configurar</h1>
+  <p class="text-secondary">Elija qué parte del diploma quiere ajustar.</p>
+  <div class="row row-cols-2 g-3">
+    <div class="col">
+      <a class="card h-100 config-card" href="{% url 'diplomas:configure_name' %}">
+        <div class="card-body">
+          <h2 class="h6">Vista de nombre</h2>
+          <img class="template-thumb mb-2" alt="Miniatura del nombre" src="{% url 'diplomas:configure_name_thumb' %}?v={{ stamp }}" onerror="this.remove()">
+          <p class="mb-0">Posición, fuente, tamaño y color del nombre en el diploma.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a class="card h-100 config-card" href="{% url 'diplomas:configure_motive' %}">
+        <div class="card-body">
+          <h2 class="h6">Vista de motivo</h2>
+          <img class="template-thumb mb-2" alt="Miniatura del motivo" src="{% url 'diplomas:configure_motive_thumb' %}?v={{ stamp }}" onerror="this.remove()">
+          <p class="mb-0">Posición, fuente, tamaño y color del motivo en el diploma.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a class="card h-100 config-card" href="{% url 'diplomas:configure_output' %}">
+        <div class="card-body">
+          <h2 class="h6">Salida de certificado</h2>
+          <img class="template-thumb mb-2" alt="Miniatura de la salida" src="{% url 'diplomas:configure_output_thumb' %}?v={{ stamp }}" onerror="this.remove()">
+          <p class="mb-0">Resolución, margen y el nombre del archivo PDF.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col">
+      <a class="card h-100 config-card" href="{% url 'diplomas:configure_email' %}">
+        <div class="card-body">
+          <h2 class="h6">Correo</h2>
+          <img class="template-thumb mb-2" alt="Miniatura del correo" src="{% url 'diplomas:configure_email_thumb' %}?v={{ stamp }}" onerror="this.remove()">
+          <p class="mb-0">Asunto, mensaje y servidor para enviar el diploma.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+{% endblock %}

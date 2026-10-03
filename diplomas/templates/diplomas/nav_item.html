@@ -1,0 +1,7 @@
+{% with url_name="diplomas:"|add:name %}
+<li class="nav-item">
+  {% with current=request.resolver_match.url_name %}
+  <a class="nav-link{% if current == name %} active{% endif %}{% if name == 'list' and current == 'list_upload' %} active{% endif %}{% if name == 'motive' and current == 'motive_upload' %} active{% endif %}{% if name == 'configure' and 'configure_' in current %} active{% endif %}" href="{% url url_name %}">{{ label }}</a>
+  {% endwith %}
+</li>
+{% endwith %}

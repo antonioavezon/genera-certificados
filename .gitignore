@@ -1,0 +1,51 @@
+# Entorno y herramientas
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Datos privados. No van a GitHub.
+.env
+.env.*
+!.env.example
+data/secret_key
+data/*.sqlite3
+*.sqlite3
+*.sqlite3-journal
+
+# Diplomas, certificados y copias generadas
+generated/**
+!generated/.gitkeep
+
+# Listas y plantillas cargadas por quien usa la aplicación
+uploads/lists/**
+!uploads/lists/.gitkeep
+uploads/templates/**
+!uploads/templates/.gitkeep
+
+# PDF, imágenes y hojas de cálculo locales
+# Las pruebas regeneran sus archivos con tests/build_fixtures.py
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.xlsx
+*.xls
+
+# Registros que pueden incluir nombres o correos
+logs/**
+!logs/.gitkeep
+*.log
+
+temp/*
+!temp/.gitkeep
+staticfiles/

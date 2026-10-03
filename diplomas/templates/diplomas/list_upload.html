@@ -1,0 +1,56 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Cargar lista · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Cargar archivo</h1>
+  <p class="text-secondary">Cargue un CSV UTF-8 o un Excel .xlsx. Después indique qué columna es el nombre, el apellido y el correo.</p>
+  <form method="post" enctype="multipart/form-data" class="card card-body mb-4" data-wait>
+    {% csrf_token %}
+    <input type="hidden" name="action" value="upload">
+    <div class="mb-3">
+      <label class="form-label" for="{{ upload_form.data_file.id_for_label }}">Archivo</label>
+      {{ upload_form.data_file }}
+    </div>
+    <button class="btn btn-primary" type="submit" data-busy>Cargar lista</button>
+  </form>
+
+  {% if pending and mapping_form %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <h2 class="h5">Asociar columnas de {{ pending.original_name }}</h2>
+        {% if pending_notes %}
+          {% for note in pending_notes %}<div class="alert alert-info">{{ note }}</div>{% endfor %}
+        {% endif %}
+        <div class="table-responsive mb-3">
+          <table class="table table-sm">
+            <thead>
+              <tr>{% for header in preview_headers %}<th>{{ header }}</th>{% endfor %}</tr>
+            </thead>
+            <tbody>
+              {% for row in preview_rows %}
+                <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="map">
+          {% for field in mapping_form %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+              {{ field.errors }}
+            </div>
+          {% endfor %}
+          <button class="btn btn-primary" type="submit">Confirmar lista</button>
+        </form>
+        <form method="post" class="mt-2">
+          {% csrf_token %}
+          <button class="btn btn-outline-secondary btn-sm" type="submit" name="action" value="discard">Descartar esta carga</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+  <a class="btn btn-outline-secondary" href="{% url 'diplomas:list' %}">Volver a la lista</a>
+{% endblock %}

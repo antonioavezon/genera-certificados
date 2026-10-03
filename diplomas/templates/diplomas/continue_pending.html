@@ -1,0 +1,20 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Enviar certificados · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Enviar certificados pendientes</h1>
+  <p class="text-secondary">Se mandan los diplomas que ya están generados y todavía no se han enviado. Un correo ya enviado no se manda otra vez.</p>
+  {% if not email_ready %}
+    <div class="alert alert-warning">
+      El correo no está listo.
+      {% if email_issues %}<div>{{ email_issues.0 }}</div>{% endif %}
+    </div>
+    <a class="btn btn-outline-primary" href="{% url 'diplomas:configure_email' %}">Configurar email</a>
+  {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'diplomas:generate' %}">
+      <button class="btn btn-success" type="submit">Enviar pendientes</button>
+    </form>
+  {% endif %}
+  <p class="mt-3 mb-0"><a href="{% url 'diplomas:generate' %}">Volver a Generar</a></p>
+{% endblock %}

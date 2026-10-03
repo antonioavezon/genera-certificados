@@ -1,0 +1,73 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Lote {{ batch.pk }} · Diplomas{% endblock %}
+{% block content %}
+  <p><a href="{% url 'diplomas:history' %}">Volver al historial</a></p>
+  <h1 class="h3">Lote #{{ batch.pk }}</h1>
+  <p class="text-secondary mb-1">{{ batch.started_at|date:"d/m/Y H:i" }} · {{ batch.get_status_display }}</p>
+  <p>Lista: {{ batch.import_batch.original_name }} · Total {{ batch.total }} · Generados {{ batch.generated_count }} · Ya existían {{ batch.already_exists_count }} · Omitidos {{ batch.skipped_count }} · Errores {{ batch.error_count }}</p>
+  <p>Enviados {{ batch.sent_count }} · Fallidos {{ batch.email_failed_count }} · Omitidos de correo {{ batch.email_skipped_count }}</p>
+  {% if batch.message %}<div class="alert alert-secondary">{{ batch.message }}</div>{% endif %}
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'diplomas:export_csv' batch.pk %}">Descargar CSV</a>
+    <form method="post" action="{% url 'diplomas:continue_pending' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn btn-outline-primary btn-sm" type="submit" {% if not email_ready %}disabled{% endif %}>Continuar envíos pendientes</button>
+    </form>
+    <form method="post" action="{% url 'diplomas:retry_failed' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn btn-outline-warning btn-sm" type="submit" {% if not email_ready %}disabled{% endif %}>Reintentar fallidos</button>
+    </form>
+  </div>
+  <ul class="nav nav-pills mb-3">
+    {% for key, label in filters %}
+      <li class="nav-item">
+        <a class="nav-link{% if selected == key %} active{% endif %}" href="?estado={{ key }}">{{ label }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Nombre</th><th>Correo</th><th>PDF</th><th>Generación</th><th>Correo</th><th>Intentos</th><th>Detalle</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in page_obj %}
+          <tr>
+            <td>{{ record.full_name }}</td>
+            <td>{{ record.email }}</td>
+            <td>
+              {% if record.filename and record.status == "GENERATED" or record.status == "REGENERATED" or record.status == "ALREADY_EXISTS" %}
+                <a href="{% url 'diplomas:download_pdf' record.pk %}">{{ record.filename }}</a>
+              {% else %}
+                {{ record.filename }}
+              {% endif %}
+            </td>
+            <td>{{ record.get_status_display }}</td>
+            <td>{% if record.delivery %}{{ record.delivery.get_status_display }}{% else %}—{% endif %}</td>
+            <td>{% if record.delivery %}{{ record.delivery.attempt_count }}{% else %}0{% endif %}</td>
+            <td>
+              {{ record.message }}
+              {% if record.delivery.error_message %} {{ record.delivery.error_message }}{% endif %}
+            </td>
+            <td>
+              {% if record.delivery and record.delivery.status == "SENT" %}
+                <form method="post" action="{% url 'diplomas:resend' record.delivery.pk %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button class="btn btn-outline-secondary btn-sm" type="submit" {% if not email_ready %}disabled{% endif %}>Reenviar</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8">No hay registros para este filtro.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "diplomas/pagination.html" %}
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Página no encontrada · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h4">No se encontró la página</h1>
+  <p>La dirección no corresponde a una pantalla de la aplicación.</p>
+  <a class="btn btn-primary" href="{% url 'diplomas:home' %}">Volver al inicio</a>
+{% endblock %}

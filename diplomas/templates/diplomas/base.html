@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Diplomas{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'diplomas/vendor/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'diplomas/app.css' %}">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg mb-4" data-bs-theme="dark">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'diplomas:home' %}">Diplomas</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Abrir menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menu">
+        <ul class="navbar-nav ms-auto">
+          {% include "diplomas/nav_item.html" with name="home" label="Inicio" %}
+          {% include "diplomas/nav_item.html" with name="list" label="Lista" %}
+          {% include "diplomas/nav_item.html" with name="motive" label="Motivo" %}
+          {% include "diplomas/nav_item.html" with name="template" label="Plantilla" %}
+          {% include "diplomas/nav_item.html" with name="configure" label="Configurar" %}
+          {% include "diplomas/nav_item.html" with name="generate" label="Generar" %}
+          {% include "diplomas/nav_item.html" with name="history" label="Historial" %}
+          {% include "diplomas/nav_item.html" with name="about" label="Acerca de" %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <main class="container pb-5">
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{% static 'diplomas/vendor/bootstrap.bundle.min.js' %}"></script>
+  <script>
+    document.querySelectorAll("form[data-wait]").forEach(function (form) {
+      form.addEventListener("submit", function () {
+        var button = form.querySelector("button[type=submit][data-busy]");
+        if (!button || button.disabled) {
+          return;
+        }
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Procesando…';
+      });
+    });
+    document.querySelectorAll("[data-color-for]").forEach(function (picker) {
+      var input = document.getElementById(picker.getAttribute("data-color-for"));
+      if (!input) {
+        return;
+      }
+      var sync = function () {
+        if (/^#[0-9A-Fa-f]{6}$/.test(input.value)) {
+          picker.value = input.value;
+        }
+      };
+      picker.addEventListener("input", function () {
+        input.value = picker.value.toUpperCase();
+      });
+      input.addEventListener("input", sync);
+      sync();
+    });
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

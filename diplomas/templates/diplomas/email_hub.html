@@ -1,0 +1,36 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Correo · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Correo</h1>
+  <p class="text-secondary">Elija el servidor o el texto del mensaje.</p>
+  <div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6"><a class="dashboard-link" href="{% url 'diplomas:configure_gmail' %}">Gmail</a></h2>
+          <img class="template-thumb mb-2" alt="Miniatura de Gmail" src="{% url 'diplomas:configure_gmail_thumb' %}?v={{ stamp }}" onerror="this.remove()">
+          <p class="mb-0">Cuenta y contraseña de aplicación.{% if password_set and smtp_host == "smtp.gmail.com" %} Contraseña cargada.{% endif %}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6"><a class="dashboard-link" href="{% url 'diplomas:configure_other' %}">Otro proveedor</a></h2>
+          <img class="template-thumb mb-2" alt="Miniatura de otro proveedor" src="{% url 'diplomas:configure_other_thumb' %}?v={{ stamp }}" onerror="this.remove()">
+          <p class="mb-0">{% if smtp_host and smtp_host != "smtp.gmail.com" %}{{ smtp_host }}{% else %}Servidor, puerto y remitente.{% endif %}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6"><a class="dashboard-link" href="{% url 'diplomas:configure_email_body' %}">Cuerpo del correo</a></h2>
+          <img class="template-thumb mb-2" alt="Miniatura del cuerpo del correo" src="{% url 'diplomas:configure_email_body_thumb' %}?v={{ stamp }}" onerror="this.remove()">
+          <p class="mb-0">{{ subject|default:"Asunto y mensaje del diploma." }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'diplomas:configure' %}">Volver</a>
+{% endblock %}

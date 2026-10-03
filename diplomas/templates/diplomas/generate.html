@@ -1,0 +1,107 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Generar · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Generar</h1>
+
+  {% if report.blockers %}
+    <div class="alert alert-danger">
+      <strong>Hay que resolver esto antes de generar.</strong>
+      <ul class="mb-0">{% for item in report.blockers %}<li>{{ item }}</li>{% endfor %}</ul>
+    </div>
+  {% endif %}
+  {% if report.warnings %}
+    <div class="alert alert-warning">
+      <ul class="mb-0">{% for item in report.warnings %}<li>{{ item }}</li>{% endfor %}</ul>
+    </div>
+  {% endif %}
+
+  <form method="post" data-wait class="mb-4">
+    {% csrf_token %}
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-primary" type="submit" name="action" value="generate" data-busy {% if report.blockers %}disabled{% endif %}>Generar diplomas</button>
+      {% if email_ready %}
+        <button class="btn btn-success" type="submit" name="action" value="send" data-busy {% if report.blockers %}disabled{% endif %}>Generar y enviar</button>
+      {% else %}
+        <button class="btn btn-success" type="button" id="send-needs-email">Generar y enviar</button>
+      {% endif %}
+    </div>
+    <div id="email-hint" class="alert alert-warning mt-3 mb-0" hidden>Generar y enviar permanece desactivado hasta que el proveedor de correo esté configurado.</div>
+  </form>
+
+  <div class="card mb-4" id="vista-previa">
+    <div class="card-body">
+      <h2 class="h5">Vista previa</h2>
+      {% if participants %}
+        <form method="get" class="row g-2 align-items-end mb-3">
+          <div class="col-md-8">
+            <label class="form-label" for="participante">Participante</label>
+            <select class="form-select" id="participante" name="p">
+              {% for person in participants %}
+                <option value="{{ person.pk }}" {% if selected.pk == person.pk %}selected{% endif %}>{{ person.full_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-outline-primary" type="submit">Actualizar vista previa</button>
+          </div>
+        </form>
+        {% if selected %}
+          {% if preview_warnings %}
+            <div class="alert alert-warning">
+              {% for warning in preview_warnings %}<div>{{ warning }}</div>{% endfor %}
+            </div>
+          {% endif %}
+          <div class="preview-frame border rounded p-2">
+            <img id="preview-image" class="img-fluid" alt="Vista previa del diploma de {{ selected.full_name }}" src="{% url 'diplomas:preview' %}?p={{ selected.pk }}">
+            <p id="preview-error" class="text-danger mb-0" hidden>No se pudo generar la vista previa. Revise la plantilla, la fuente y la configuración.</p>
+          </div>
+        {% endif %}
+      {% else %}
+        <p class="mb-0">Cuando haya participantes válidos, elija uno para ver el diploma antes de generarlo.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+    <form method="post" action="{% url 'diplomas:continue_pending' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn btn-outline-primary" type="submit" {% if not email_ready %}disabled{% endif %}>Continuar envíos pendientes</button>
+    </form>
+    <form method="post" action="{% url 'diplomas:retry_failed' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn btn-outline-warning" type="submit" {% if not email_ready %}disabled{% endif %}>Reintentar fallidos</button>
+    </form>
+    <form method="post" action="{% url 'diplomas:open_folder' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn btn-outline-secondary" type="submit">Abrir carpeta</button>
+    </form>
+  </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  var image = document.getElementById("preview-image");
+  if (image) {
+    image.addEventListener("error", function () {
+      image.hidden = true;
+      var note = document.getElementById("preview-error");
+      if (note) {
+        note.hidden = false;
+      }
+    });
+  }
+  var blocked = document.getElementById("send-needs-email");
+  if (blocked) {
+    blocked.addEventListener("click", function () {
+      var hint = document.getElementById("email-hint");
+      hint.hidden = false;
+      window.clearTimeout(hint.hideTimer);
+      hint.hideTimer = window.setTimeout(function () {
+        hint.hidden = true;
+      }, 5000);
+    });
+  }
+</script>
+{% endblock %}

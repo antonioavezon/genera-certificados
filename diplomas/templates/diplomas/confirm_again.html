@@ -1,0 +1,21 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Generar · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Diplomas ya existentes</h1>
+  <form method="post" class="card card-body" data-wait>
+    {% csrf_token %}
+    <input type="hidden" name="action" value="{{ post_action }}">
+    {% if only_id %}<input type="hidden" name="participant" value="{{ only_id }}">{% endif %}
+    <p class="mb-3">{{ question }}</p>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="again" id="again-no" value="no" checked>
+      <label class="form-check-label" for="again-no">No</label>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="radio" name="again" id="again-yes" value="yes">
+      <label class="form-check-label" for="again-yes">Sí</label>
+    </div>
+    <p class="small text-secondary">Si elige Sí, no se reemplaza el PDF actual. Se crea una copia con _1, _2, _3…</p>
+    <button class="btn btn-primary" type="submit" data-busy>Continuar</button>
+  </form>
+{% endblock %}

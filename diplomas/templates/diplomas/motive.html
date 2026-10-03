@@ -1,0 +1,17 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Motivo · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Motivo</h1>
+  <p class="text-secondary">Cada salto de línea se dibuja como una línea independiente. {{ motive.line_count }} línea{{ motive.line_count|pluralize:"s" }}.</p>
+  <form method="post" class="card card-body mb-3">
+    {% csrf_token %}
+    <label class="form-label" for="{{ form.text.id_for_label }}">Texto del diploma</label>
+    {{ form.text }}
+    <div class="form-text mb-3">{{ form.text.help_text }}</div>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-primary" type="submit" name="action" value="save">Guardar</button>
+      <button class="btn btn-outline-secondary" type="submit" name="action" value="restore">Restaurar anterior</button>
+      <a class="btn btn-outline-primary" href="{% url 'diplomas:motive_upload' %}">Cargar TXT</a>
+    </div>
+  </form>
+{% endblock %}

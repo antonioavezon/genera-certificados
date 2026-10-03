@@ -1,0 +1,15 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Cargar TXT · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Cargar TXT</h1>
+  <p class="text-secondary">El archivo debe estar en UTF-8. Cada salto de línea se dibuja como una línea independiente.</p>
+  <form method="post" enctype="multipart/form-data" class="card card-body mb-3">
+    {% csrf_token %}
+    <label class="form-label" for="{{ upload_form.motive_file.id_for_label }}">Archivo de texto</label>
+    {{ upload_form.motive_file }}
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <button class="btn btn-primary" type="submit">Cargar texto</button>
+      <a class="btn btn-outline-secondary" href="{% url 'diplomas:motive' %}">Volver</a>
+    </div>
+  </form>
+{% endblock %}

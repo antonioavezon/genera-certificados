@@ -1,0 +1,17 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Cuerpo del correo · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Cuerpo del correo</h1>
+  <p class="text-secondary">Asunto y mensaje que acompañan al diploma. Puede usar {nombre}.</p>
+  <form method="post" class="card card-body">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      {% include "diplomas/field.html" with field=field %}
+    {% endfor %}
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-primary" type="submit">Guardar mensaje</button>
+      <a class="btn btn-outline-secondary" href="{% url 'diplomas:configure_email' %}">Volver</a>
+    </div>
+  </form>
+{% endblock %}

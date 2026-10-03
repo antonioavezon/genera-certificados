@@ -1,0 +1,87 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Lista · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Lista de participantes</h1>
+  {% if pending %}
+    <div class="alert alert-info">Hay un archivo esperando que se asocien las columnas. <a href="{% url 'diplomas:list_upload' %}">Continuar la carga</a>.</div>
+  {% endif %}
+  {% if active %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h5 mb-0">{{ active.original_name }}</h2>
+      <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-outline-secondary btn-sm" type="submit" name="action" value="revalidate">Volver a validar</button>
+      </form>
+    </div>
+    <p>{{ active.total_rows }} filas · {{ active.valid_count }} válidas · {{ active.warning_count }} con advertencias · {{ active.error_count }} con errores.</p>
+    {% if active.notes %}<div class="alert alert-info">{{ active.notes }}</div>{% endif %}
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>#</th><th>Nombre</th><th>Apellido</th><th>Correo</th><th>Archivo</th><th>Estado</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for person in page_obj %}
+            <tr>
+              <td>{{ person.row_number }}</td>
+              <td>{{ person.first_name }}</td>
+              <td>{{ person.last_name }}</td>
+              <td>{{ person.email }}</td>
+              <td><code>{{ person.filename }}</code></td>
+              <td>
+                {% if person.status == "valid" %}<span class="badge text-bg-success">Válido</span>
+                {% elif person.status == "warning" %}<span class="badge text-bg-warning">Advertencia</span>
+                {% else %}<span class="badge text-bg-danger">Error</span>{% endif %}
+              </td>
+              <td class="text-nowrap">
+                <a class="btn btn-outline-primary btn-sm" href="{% url 'diplomas:list' %}?editar={{ person.pk }}">Editar</a>
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="certificate">
+                  <input type="hidden" name="participant" value="{{ person.pk }}">
+                  <button class="btn btn-outline-success btn-sm" type="submit">Certificado</button>
+                </form>
+                <form method="post" class="d-inline" onsubmit="return confirm('¿Borrar a {{ person.full_name|escapejs }} de la lista?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="delete-participant">
+                  <input type="hidden" name="participant" value="{{ person.pk }}">
+                  <button class="btn btn-outline-danger btn-sm" type="submit">Borrar</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "diplomas/pagination.html" %}
+    <form method="post" class="card card-body mb-4 mt-3">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save-participant">
+      {% if editing %}<input type="hidden" name="participant" value="{{ editing.pk }}">{% endif %}
+      <h3 class="h6">{% if editing %}Editar participante{% else %}Añadir participante{% endif %}</h3>
+      <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label" for="{{ participant_form.first_name.id_for_label }}">Nombre</label>
+          {{ participant_form.first_name }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="{{ participant_form.last_name.id_for_label }}">Apellido</label>
+          {{ participant_form.last_name }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="{{ participant_form.email.id_for_label }}">Correo</label>
+          {{ participant_form.email }}
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button class="btn btn-primary" type="submit">{% if editing %}Guardar{% else %}Añadir{% endif %}</button>
+          {% if editing %}<a class="btn btn-outline-secondary" href="{% url 'diplomas:list' %}">Cancelar</a>{% endif %}
+        </div>
+      </div>
+    </form>
+  {% else %}
+    <p>Todavía no hay una lista confirmada.</p>
+  {% endif %}
+  <a class="btn btn-outline-primary" href="{% url 'diplomas:list_upload' %}">Cargar archivo</a>
+{% endblock %}

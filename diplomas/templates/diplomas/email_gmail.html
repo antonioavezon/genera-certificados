@@ -1,0 +1,52 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Gmail · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Gmail</h1>
+  <form method="post" class="card">
+    {% csrf_token %}
+    <div class="card-body">
+      {{ form.non_field_errors }}
+      <p class="small">Gmail no acepta la contraseña de la cuenta. Use una contraseña de aplicación.</p>
+      <ol class="small">
+        <li>Active la verificación en dos pasos de la cuenta de Google.</li>
+        <li>Cree la contraseña de aplicación en <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">la cuenta de Google</a>.</li>
+        <li>Escríbala abajo, junto con el correo de Gmail.</li>
+      </ol>
+      <input type="hidden" name="host" value="smtp.gmail.com">
+      <input type="hidden" name="port" value="587">
+      <input type="hidden" name="use_tls" value="on">
+      {% include "diplomas/field.html" with field=form.user %}
+      {% include "diplomas/field.html" with field=form.password %}
+      <p class="small text-secondary">Contraseña cargada: {% if password_set %}sí{% else %}no{% endif %}.</p>
+      {% include "diplomas/field.html" with field=form.sender %}
+      {% include "diplomas/field.html" with field=form.test_to %}
+      <p class="small text-secondary">Gmail usa smtp.gmail.com, puerto 587 y TLS.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary" type="submit" name="action" value="save">Guardar</button>
+        <button class="btn btn-outline-primary" type="submit" name="action" value="validate">Validar conexión</button>
+        <button class="btn btn-success" type="submit" name="action" value="test">Enviar correo de prueba</button>
+        <a class="btn btn-outline-secondary" href="{% url 'diplomas:configure_email' %}">Volver</a>
+      </div>
+    </div>
+  </form>
+  <script>
+    var account = document.getElementById("id_user");
+    var sender = document.getElementById("id_sender");
+    var testTo = document.getElementById("id_test_to");
+    function copyAccount() {
+      if (!sender.dataset.edited) {
+        sender.value = account.value;
+      }
+      if (!testTo.dataset.edited) {
+        testTo.value = account.value;
+      }
+    }
+    account.addEventListener("input", copyAccount);
+    sender.addEventListener("input", function () {
+      sender.dataset.edited = sender.value ? "1" : "";
+    });
+    testTo.addEventListener("input", function () {
+      testTo.dataset.edited = testTo.value ? "1" : "";
+    });
+  </script>
+{% endblock %}

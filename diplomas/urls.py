@@ -1,0 +1,46 @@
+from django.urls import path
+
+from diplomas.views import about, configure, dashboard, email_settings, errors, generate, history, lists, motive, template_views
+
+app_name = "diplomas"
+
+urlpatterns = [
+    path("", dashboard.home, name="home"),
+    path("lista/", lists.list_view, name="list"),
+    path("lista/cargar/", lists.list_upload_view, name="list_upload"),
+    path("lista/miniatura/", lists.list_thumbnail, name="list_thumb"),
+    path("motivo/", motive.motive_view, name="motive"),
+    path("motivo/cargar/", motive.motive_upload_view, name="motive_upload"),
+    path("motivo/miniatura/", motive.motive_thumbnail, name="motive_thumb"),
+    path("plantilla/", template_views.template_view, name="template"),
+    path("plantilla/miniatura/", template_views.template_thumbnail, name="template_thumb"),
+    path("configurar/", configure.configure_view, name="configure"),
+    path("configurar/nombre/miniatura/", configure.configure_name_thumbnail, name="configure_name_thumb"),
+    path("configurar/motivo/miniatura/", configure.configure_motive_thumbnail, name="configure_motive_thumb"),
+    path("configurar/salida/miniatura/", configure.configure_output_thumbnail, name="configure_output_thumb"),
+    path("configurar/correo/miniatura/", configure.configure_email_thumbnail, name="configure_email_thumb"),
+    path("configurar/nombre/", configure.configure_name, name="configure_name"),
+    path("configurar/motivo/", configure.configure_motive_layout, name="configure_motive"),
+    path("configurar/salida/", configure.configure_output, name="configure_output"),
+    path("configurar/correo/gmail/miniatura/", email_settings.gmail_thumbnail, name="configure_gmail_thumb"),
+    path("configurar/correo/otro/miniatura/", email_settings.other_thumbnail, name="configure_other_thumb"),
+    path("configurar/correo/cuerpo/miniatura/", email_settings.body_thumbnail, name="configure_email_body_thumb"),
+    path("configurar/correo/gmail/", email_settings.gmail_view, name="configure_gmail"),
+    path("configurar/correo/otro/", email_settings.other_provider_view, name="configure_other"),
+    path("configurar/correo/cuerpo/", email_settings.email_body_view, name="configure_email_body"),
+    path("configurar/correo/", email_settings.email_settings_view, name="configure_email"),
+    path("correo/configurar/", email_settings.email_settings_view, name="email_settings"),
+    path("generar/", generate.generate_view, name="generate"),
+    path("generar/vista-previa/", generate.preview_image, name="preview"),
+    path("generar/carpeta/", generate.open_folder, name="open_folder"),
+    path("historial/", history.history_list, name="history"),
+    path("historial/borrar/", history.clear_history_view, name="clear_history"),
+    path("historial/<int:batch_id>/", history.history_detail, name="batch_detail"),
+    path("historial/<int:batch_id>/csv/", history.export_csv, name="export_csv"),
+    path("historial/descargar/<int:record_id>/", history.download_pdf, name="download_pdf"),
+    path("correo/continuar/", generate.continue_pending, name="continue_pending"),
+    path("correo/reintentar/", generate.retry_failed, name="retry_failed"),
+    path("correo/reenviar/<int:delivery_id>/", history.resend_email, name="resend"),
+    path("acerca/", about.about, name="about"),
+    path("error-csrf/", errors.csrf_failure, name="csrf_failure"),
+]

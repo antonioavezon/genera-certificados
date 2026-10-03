@@ -1,0 +1,27 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Otro proveedor · Diplomas{% endblock %}
+{% block content %}
+  <h1 class="h3">Otro proveedor</h1>
+  <form method="post" class="card">
+    {% csrf_token %}
+    <div class="card-body">
+      {{ form.non_field_errors }}
+      <p class="small text-secondary">Servidor SMTP distinto de Gmail. La contraseña no se muestra ni se guarda en la base de datos.</p>
+      {% include "diplomas/field.html" with field=form.host %}
+      {% include "diplomas/field.html" with field=form.port %}
+      {% include "diplomas/field.html" with field=form.use_tls %}
+      {% include "diplomas/field.html" with field=form.use_ssl %}
+      {% include "diplomas/field.html" with field=form.user %}
+      {% include "diplomas/field.html" with field=form.password %}
+      <p class="small text-secondary">Contraseña cargada: {% if password_set %}sí{% else %}no{% endif %}.</p>
+      {% include "diplomas/field.html" with field=form.sender %}
+      {% include "diplomas/field.html" with field=form.test_to %}
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary" type="submit" name="action" value="save">Guardar</button>
+        <button class="btn btn-outline-primary" type="submit" name="action" value="validate">Validar conexión</button>
+        <button class="btn btn-success" type="submit" name="action" value="test">Enviar correo de prueba</button>
+        <a class="btn btn-outline-secondary" href="{% url 'diplomas:configure_email' %}">Volver</a>
+      </div>
+    </div>
+  </form>
+{% endblock %}

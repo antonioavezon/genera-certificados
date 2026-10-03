@@ -1,0 +1,73 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Inicio · Diplomas{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h1 class="h3 mb-1">Generación de diplomas</h1>
+      <p class="text-secondary mb-0">Revise la lista, el motivo y la plantilla antes de generar.</p>
+    </div>
+  </div>
+  {% if folder_problem %}
+    <div class="alert alert-danger">{{ folder_problem }}</div>
+  {% endif %}
+  <div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6"><a class="dashboard-link" href="{% url 'diplomas:list' %}">Lista</a></h2>
+          {% if batch %}
+            <img class="template-thumb mb-2" alt="Miniatura de {{ batch.original_name }}" src="{% url 'diplomas:list_thumb' %}?v={{ batch.content_hash }}-{{ template.width_px|default:0 }}x{{ template.height_px|default:0 }}" onerror="this.remove()">
+            <p class="mb-1"><strong>{{ batch.original_name }}</strong></p>
+            <p class="mb-0">{{ batch.total_rows }} personas · {{ batch.valid_count }} válidas · {{ batch.error_count }} con errores</p>
+          {% else %}
+            <p class="mb-0">Todavía no hay una lista confirmada.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6"><a class="dashboard-link" href="{% url 'diplomas:template' %}">Plantilla</a></h2>
+          {% if template %}
+            <img class="template-thumb mb-2" alt="Miniatura de {{ template.original_name }}" src="{% url 'diplomas:template_thumb' %}?v={{ template.content_hash }}" onerror="this.remove()">
+            <p class="mb-1"><strong>{{ template.original_name }}</strong></p>
+            <p class="mb-0">{{ template.kind|upper }} · {{ template.width_px }} × {{ template.height_px }} px{% if template.page_count > 1 %} · página {{ template.selected_page }} de {{ template.page_count }}{% endif %}</p>
+          {% else %}
+            <p class="mb-0">Todavía no hay una plantilla activa.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6"><a class="dashboard-link" href="{% url 'diplomas:motive' %}">Motivo</a></h2>
+          {% if motive.is_ready %}
+            <img class="template-thumb mb-2" alt="Miniatura del motivo" src="{% url 'diplomas:motive_thumb' %}?v={{ motive.content_hash }}-{{ template.width_px|default:0 }}x{{ template.height_px|default:0 }}" onerror="this.remove()">
+            <p class="mb-0">Escrito · {{ motive.line_count }} línea{{ motive.line_count|pluralize:"s" }}</p>
+          {% else %}
+            <p class="mb-0">Todavía no hay un motivo.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-outline-primary" href="{% url 'diplomas:generate' %}">Vista previa</a>
+    <form method="post" action="{% url 'diplomas:home' %}" data-wait>
+      {% csrf_token %}
+      <button class="btn btn-primary" type="submit" name="action" value="generate" data-busy>Generar diplomas</button>
+    </form>
+    <form method="post" action="{% url 'diplomas:home' %}" data-wait>
+      {% csrf_token %}
+      <button class="btn btn-success" type="submit" name="action" value="send" data-busy {% if not email_ready %}disabled{% endif %}>Generar y enviar</button>
+    </form>
+    <form method="post" action="{% url 'diplomas:open_folder' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="/">
+      <button class="btn btn-outline-secondary" type="submit">Ver Diplomas</button>
+    </form>
+    <a class="btn btn-outline-primary" href="{% url 'diplomas:configure_email' %}">Configurar email</a>
+  </div>
+{% endblock %}

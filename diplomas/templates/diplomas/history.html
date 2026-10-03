@@ -1,0 +1,38 @@
+{% extends "diplomas/base.html" %}
+{% block title %}Historial · Diplomas{% endblock %}
+{% block content %}
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">Historial</h1>
+    <form method="post" action="{% url 'diplomas:clear_history' %}" onsubmit="return confirm('¿Borrar todo el historial? Los diplomas ya generados no se eliminan.');">
+      {% csrf_token %}
+      <button class="btn btn-outline-danger" type="submit" {% if not batches %}disabled{% endif %}>Borrar historial</button>
+    </form>
+  </div>
+  {% if batches %}
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Lista</th><th>Total</th><th>Generados</th><th>Errores</th><th>Enviados</th><th>Fallidos</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for batch in batches %}
+            <tr>
+              <td>{{ batch.started_at|date:"d/m/Y H:i" }}</td>
+              <td>{{ batch.import_batch.original_name }}</td>
+              <td>{{ batch.total }}</td>
+              <td>{{ batch.generated_count }}</td>
+              <td>{{ batch.error_count }}</td>
+              <td>{{ batch.sent_count }}</td>
+              <td>{{ batch.email_failed_count }}</td>
+              <td><a href="{% url 'diplomas:batch_detail' batch.pk %}">Ver lote #{{ batch.pk }}</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>Todavía no hay lotes.</p>
+  {% endif %}
+{% endblock %}
